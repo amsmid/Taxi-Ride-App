@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#000000</color>
+    <color name="transparent_white">#A6ffffff</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="grey">#c7c6c6</color>
+    <color name="facebook_color">#415dae</color>
+    <color name="facebook_color_transparent">#66415dae</color>
+    <color name="green_transparent">#CCCADFAA</color>
+    <color name="black_transparent">#40000000</color>
+    <color name="light_green">#CADFAA</color>
+    <color name="black_transparent_dark">#40000000</color>
+    <color name="light_white">#a9a9a9</color>
+</resources>
