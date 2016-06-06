@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="rides-android-0.5.0">
+    <ANNOTATIONS>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.uber.sdk/rides-android/0.5.0/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.uber.sdk/rides-android/0.5.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.uber.sdk/rides-android/0.5.0/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.uber.sdk/rides-android/0.5.0/2daa8617a5b1f7ccfb7186732a904b52371f2072/rides-android-0.5.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

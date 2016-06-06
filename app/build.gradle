@@ -30,4 +30,5 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta3'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     compile 'com.google.android.gms:play-services:8.4.0'
+    compile 'com.uber.sdk:rides-android:0.5.0'
 }
