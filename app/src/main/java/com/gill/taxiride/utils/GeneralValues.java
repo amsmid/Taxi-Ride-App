@@ -7,6 +7,8 @@ public class GeneralValues {
     public static String FONT_FILE="bauhaus.ttf";
 
     public static String SERVER_TOKEN="";
+    public static String UBER_CLIENT_ID="";
+    public static String UBER_PRODUCT_ID="";
 
     public static String BASE_URL="https://api.uber.com/";
     public static String UBER_TIME_URL=BASE_URL+"v1/estimates/time?server_token="+SERVER_TOKEN;
