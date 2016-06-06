@@ -19,8 +19,11 @@
     <string name="book_uber">Book Uber</string>
     <string name="estimate_time">Trip Duration</string>
     <string name="can_not_find_coordinates">Cannot find the Location entered</string>
-    <string name="server_error">Cannot find ectimate price.</string>
+    <string name="server_error">Cannot find estimate price.</string>
     <string name="server_not_responding">Server Not Responding</string>
     <string name="not_found_time">Cannot find the estimated time</string>
     <string name="not_found_fare">Cannot find the estimated fare</string>
+    <string name="current_location">Current Location</string>
+    <string name="Error_occurred_during_authentication">Error occurred during authentication</string>
+    <string name="Error_occurred_in_the_Ride_Request_Widget">Error occurred in the Ride Request Widget</string>
 </resources>
