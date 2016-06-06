@@ -160,7 +160,8 @@ public class SplashActivity extends AppCompatActivity {
                 }else{
                     tinyDB.putDouble(GeneralValues.CURRENT_LATITUDE,location.getLatitude());
                     tinyDB.putDouble(GeneralValues.CURRENT_LONGITUDE,location.getLongitude());
-                    Utils.show_log("Location : Lat = "+tinyDB.getDouble(GeneralValues.CURRENT_LATITUDE,0)+" Lng = "+tinyDB.getDouble(GeneralValues.CURRENT_LONGITUDE,0));
+                    Utils.show_log("Location : Lat = "+tinyDB.getDouble(GeneralValues.CURRENT_LATITUDE,0)+
+                            " Lng = "+tinyDB.getDouble(GeneralValues.CURRENT_LONGITUDE,0));
                     start_timer();
                 }
             }
