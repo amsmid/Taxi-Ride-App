@@ -61,12 +61,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     Context mContext;
     TinyDB tinyDB;
-    AutoCompleteTextView et_pickup,et_destination;
-    TextView tv_pickup_time,tv_set_pick_up,tv_estimate_fare,tv_estimate_time;
-    LinearLayout ll_pickup,ll_book;
+    AutoCompleteTextView pickUpLocationView, destinationView;
+    TextView pickUpTimeTextView, setPickUpTimeTextView, fareEstimateTextView, timeEstimateTextView;
+    LinearLayout pickUpLayout, requestUberLayout;
     private RideRequestButton uberButton;
     Dialog dialog;
-    double pick_lat=0,pick_long=0,des_lat=0,des_long=0;
+    double pickUpLatitude = 0, pickUpLongitude = 0, destinationLatitude = 0, destinationLongitude = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,14 +84,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        et_pickup=(AutoCompleteTextView)findViewById(R.id.et_pickup);
-        et_destination=(AutoCompleteTextView)findViewById(R.id.et_destination);
-        tv_pickup_time=(TextView)findViewById(R.id.tv_pickup_time);
-        tv_set_pick_up=(TextView)findViewById(R.id.tv_set_pick_up);
-        ll_pickup=(LinearLayout)findViewById(R.id.ll_pickup);
-        ll_book=(LinearLayout)findViewById(R.id.ll_book);
-        tv_estimate_fare=(TextView)findViewById(R.id.tv_estimate_fare);
-        tv_estimate_time=(TextView)findViewById(R.id.tv_estimate_time);
+        pickUpLocationView =(AutoCompleteTextView)findViewById(R.id.et_pickup);
+        destinationView =(AutoCompleteTextView)findViewById(R.id.et_destination);
+        pickUpTimeTextView =(TextView)findViewById(R.id.tv_pickup_time);
+        setPickUpTimeTextView =(TextView)findViewById(R.id.tv_set_pick_up);
+        pickUpLayout =(LinearLayout)findViewById(R.id.ll_pickup);
+        requestUberLayout =(LinearLayout)findViewById(R.id.ll_book);
+        fareEstimateTextView =(TextView)findViewById(R.id.tv_estimate_fare);
+        timeEstimateTextView =(TextView)findViewById(R.id.tv_estimate_time);
         uberButton = (RideRequestButton) findViewById(R.id.tv_book_uber_default);
 
         SessionConfiguration config = new SessionConfiguration.Builder()
@@ -103,7 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         UberSdk.initialize(config);
 
 
-        et_pickup.addTextChangedListener(new TextWatcher() {
+        pickUpLocationView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -113,7 +113,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String str = s.toString();
                 if (str.length() > 0 && str.startsWith(" ")) {
-                    et_pickup.setText(str.trim());
+                    pickUpLocationView.setText(str.trim());
                 }
             }
 
@@ -123,7 +123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        et_destination.addTextChangedListener(new TextWatcher() {
+        destinationView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -133,7 +133,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String str = s.toString();
                 if (str.length() > 0 && str.startsWith(" ")) {
-                    et_destination.setText(str.trim());
+                    destinationView.setText(str.trim());
                 }
             }
 
@@ -143,33 +143,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        tv_set_pick_up.setOnClickListener(new View.OnClickListener() {
+        setPickUpTimeTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(et_pickup.getText().toString().length()>0){
-                    et_destination.setVisibility(View.VISIBLE);
-                    ll_pickup.setVisibility(View.GONE);
+                if(pickUpLocationView.getText().toString().length()>0){
+                    destinationView.setVisibility(View.VISIBLE);
+                    pickUpLayout.setVisibility(View.GONE);
                 }else{
                     Utils.showToast(mContext,getString(R.string.enter_pickup_location));
                 }
             }
         });
 
-        et_pickup.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.search_list_item));
-        et_pickup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        pickUpLocationView.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.search_list_item));
+        pickUpLocationView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Utils.hideKeyboard(mContext,getCurrentFocus());
-                get_latlong(et_pickup.getText().toString(),"pick");
+                get_latlong(pickUpLocationView.getText().toString(),"pick");
             }
         });
 
-        et_destination.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.search_list_item));
-        et_destination.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        destinationView.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.search_list_item));
+        destinationView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Utils.hideKeyboard(mContext,getCurrentFocus());
-                get_latlong(et_destination.getText().toString(),"des");
+                get_latlong(destinationView.getText().toString(),"des");
             }
         });
 
@@ -304,11 +304,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void get_latlong(final String place, final String check){
         dialog.show();
         if(check.equals("pick")){
-            pick_lat=0;
-            pick_long=0;
+            pickUpLatitude =0;
+            pickUpLongitude =0;
         }else{
-            des_lat=0;
-            des_long=0;
+            destinationLatitude =0;
+            destinationLongitude =0;
         }
         new AsyncTask<String, String, String>() {
             @Override
@@ -320,11 +320,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         for(Address a : addresses){
                             if(a.hasLatitude() && a.hasLongitude()){
                                 if(check.equals("pick")){
-                                    pick_lat=a.getLatitude();
-                                    pick_long=a.getLongitude();
+                                    pickUpLatitude =a.getLatitude();
+                                    pickUpLongitude =a.getLongitude();
                                 }else{
-                                    des_lat=a.getLatitude();
-                                    des_long=a.getLongitude();
+                                    destinationLatitude =a.getLatitude();
+                                    destinationLongitude =a.getLongitude();
                                 }
 
                                 set_rideParams();
@@ -341,12 +341,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 if(check.equals("pick")){
-                    if(pick_lat==0||pick_long==0){
+                    if(pickUpLatitude ==0|| pickUpLongitude ==0){
                         Utils.showToast(mContext,getString(R.string.can_not_find_coordinates));
                     }else{
-                        Utils.show_log("Location : "+pick_lat+","+pick_long);
+                        Utils.show_log("Location : "+ pickUpLatitude +","+ pickUpLongitude);
                         mMap.clear();
-                        LatLng pick_loc = new LatLng(pick_lat,pick_long);
+                        LatLng pick_loc = new LatLng(pickUpLatitude, pickUpLongitude);
                         mMap.addMarker(new MarkerOptions().position(pick_loc).title(place).
                                 icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(pick_loc));
@@ -355,10 +355,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         api_get_uber_time("selected");
                     }
                 }else{
-                    if(des_lat==0||des_long==0){
+                    if(destinationLatitude ==0|| destinationLongitude ==0){
                         Utils.showToast(mContext,getString(R.string.can_not_find_coordinates));
                     }else{
-                        Utils.show_log("Location : "+des_lat+","+des_long);
+                        Utils.show_log("Location : "+ destinationLatitude +","+ destinationLongitude);
                         api_get_uber_price();
                     }
                 }
@@ -367,13 +367,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void api_get_uber_time(final String check){
-        tv_pickup_time.setText("");
-        ll_book.setVisibility(View.GONE);
-        ll_pickup.setVisibility(View.VISIBLE);
-        et_destination.setText("");
-        et_destination.setVisibility(View.GONE);
-        des_lat=0;
-        des_long=0;
+        pickUpTimeTextView.setText("");
+        requestUberLayout.setVisibility(View.GONE);
+        pickUpLayout.setVisibility(View.VISIBLE);
+        destinationView.setText("");
+        destinationView.setVisibility(View.GONE);
+        destinationLatitude =0;
+        destinationLongitude =0;
 
         String complete_url="";
         if(check.equals("current")){
@@ -381,7 +381,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             complete_url="&start_latitude="+tinyDB.getDouble(GeneralValues.CURRENT_LATITUDE,0)+
                     "&start_longitude="+tinyDB.getDouble(GeneralValues.CURRENT_LONGITUDE,0);
         }else{
-            complete_url="&start_latitude="+pick_lat+"&start_longitude="+pick_long;
+            complete_url="&start_latitude="+ pickUpLatitude +"&start_longitude="+ pickUpLongitude;
         }
         Call<ResponseBody> call = Utils.requestApi_Default().requestJson_simple(GeneralValues.UBER_TIME_URL+complete_url);
         Utils.show_log("url = "+call.request().url());
@@ -407,16 +407,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Utils.showToast(mContext,getString(R.string.not_found_time));
                         }else{
                             if(check.equals("current")){
-                                tv_pickup_time.setText(Integer.parseInt(time)/60+" Minutes");
+                                pickUpTimeTextView.setText(Integer.parseInt(time)/60+" Minutes");
                             }else{
-                                ll_book.setVisibility(View.GONE);
-                                ll_pickup.setVisibility(View.VISIBLE);
-                                et_destination.setText("");
-                                et_destination.setVisibility(View.GONE);
-                                des_lat=0;
-                                des_long=0;
-                                tv_set_pick_up.setBackgroundResource(R.drawable.custom_green_selector);
-                                tv_pickup_time.setText(Integer.parseInt(time)/60+" Minutes");
+                                requestUberLayout.setVisibility(View.GONE);
+                                pickUpLayout.setVisibility(View.VISIBLE);
+                                destinationView.setText("");
+                                destinationView.setVisibility(View.GONE);
+                                destinationLatitude =0;
+                                destinationLongitude =0;
+                                setPickUpTimeTextView.setBackgroundResource(R.drawable.custom_green_selector);
+                                pickUpTimeTextView.setText(Integer.parseInt(time)/60+" Minutes");
                             }
                         }
                         try{
@@ -454,10 +454,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         RideParameters rideParameters = new RideParameters.Builder()
                 .setProductId(GeneralValues.UBER_PRODUCT_ID)
-                .setPickupLocation(pick_lat, pick_long, et_pickup.getText().toString(),
-                        et_pickup.getText().toString())
-                .setDropoffLocation(des_lat, des_long, et_destination.getText().toString(),
-                        et_destination.getText().toString())
+                .setPickupLocation(pickUpLatitude, pickUpLongitude, pickUpLocationView.getText().toString(),
+                        pickUpLocationView.getText().toString())
+                .setDropoffLocation(destinationLatitude, destinationLongitude, destinationView.getText().toString(),
+                        destinationView.getText().toString())
                 .build();
 
         // This button demonstrates deep-linking to the Uber app (default button behavior).
@@ -465,13 +465,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void api_get_uber_price(){
-        tv_estimate_fare.setText("");
-        tv_estimate_time.setText("");
+        fareEstimateTextView.setText("");
+        timeEstimateTextView.setText("");
         Call<ResponseBody> call = Utils.requestApi_Default().requestJson_simple(
                 GeneralValues.UBER_PRICE_URL+"&start_latitude="
-                        +pick_lat+"&start_longitude="+pick_long+
-                        "&end_latitude="+des_lat+
-                        "&end_longitude="+des_long);
+                        + pickUpLatitude +"&start_longitude="+ pickUpLongitude +
+                        "&end_latitude="+ destinationLatitude +
+                        "&end_longitude="+ destinationLongitude);
         Utils.show_log("url = "+call.request().url());
 
         call.enqueue(new Callback<ResponseBody>() {
@@ -500,9 +500,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if(time.equals("")&&price.equals("")){
                             Utils.showToast(mContext,getString(R.string.not_found_fare));
                         }else{
-                            ll_book.setVisibility(View.VISIBLE);
-                            tv_estimate_fare.setText(price);
-                            tv_estimate_time.setText(Integer.parseInt(time)/60+" Minutes");
+                            requestUberLayout.setVisibility(View.VISIBLE);
+                            fareEstimateTextView.setText(price);
+                            timeEstimateTextView.setText(Integer.parseInt(time)/60+" Minutes");
                         }
                         try{
                             dialog.dismiss();
