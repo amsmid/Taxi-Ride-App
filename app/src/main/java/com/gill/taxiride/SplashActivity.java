@@ -48,11 +48,11 @@ public class SplashActivity extends AppCompatActivity {
         WindowManager.LayoutParams params = getWindow().getAttributes();
         params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
 
-        mContext=SplashActivity.this;
-        tinyDB=new TinyDB(mContext);
+        mContext = SplashActivity.this;
+        tinyDB = new TinyDB(mContext);
 
-        logo=(ImageView)findViewById(R.id.logo);
-        title=(TextView)findViewById(R.id.title);
+        logo = (ImageView) findViewById(R.id.logo);
+        title = (TextView) findViewById(R.id.title);
 
         //animation on logo
         logo.setDrawingCacheEnabled(true);
@@ -81,7 +81,11 @@ public class SplashActivity extends AppCompatActivity {
 
             }
         });
-
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Utils.show_log("in resume");
         if(check_GPS()){
             if(Utils.isNetworkConnected(getApplicationContext())){
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -93,8 +97,9 @@ public class SplashActivity extends AppCompatActivity {
                 Utils.showToast(getApplicationContext(),getString(R.string.no_internet_connection));
             }
         }
-
     }
+
+
 
     //stay 1500 milliseconds here before goto next screen
     public void start_timer(){
@@ -153,15 +158,15 @@ public class SplashActivity extends AppCompatActivity {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                String latitide=String.valueOf(location.getLatitude());
+                String latitude=String.valueOf(location.getLatitude());
                 String longitude=String.valueOf(location.getLongitude());
-                if(latitide.equalsIgnoreCase("")||longitude.equalsIgnoreCase("")){
+                if(latitude.equalsIgnoreCase("")||longitude.equalsIgnoreCase("")){
                     Utils.showToast(mContext, getString(R.string.can_not_able_find_location));
                 }else{
                     tinyDB.putDouble(GeneralValues.CURRENT_LATITUDE,location.getLatitude());
                     tinyDB.putDouble(GeneralValues.CURRENT_LONGITUDE,location.getLongitude());
-                    Utils.show_log("Location : Lat = "+tinyDB.getDouble(GeneralValues.CURRENT_LATITUDE,0)+
-                            " Lng = "+tinyDB.getDouble(GeneralValues.CURRENT_LONGITUDE,0));
+                    Utils.show_log("Location : Latitude = "+tinyDB.getDouble(GeneralValues.CURRENT_LATITUDE,0)+
+                            " Longitude = "+tinyDB.getDouble(GeneralValues.CURRENT_LONGITUDE,0));
                     start_timer();
                 }
             }
