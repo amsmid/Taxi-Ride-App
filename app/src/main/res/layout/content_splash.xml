@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/splash_bg"
+        android:contentDescription="@string/background_image"
         android:scaleType="centerCrop"/>
 
     <ImageView
@@ -20,6 +21,7 @@
         android:layout_height="@dimen/_150sdp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:contentDescription="@string/logo_of_the_app"
         android:src="@drawable/logo"/>
 
     <TextView

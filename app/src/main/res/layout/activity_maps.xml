@@ -83,6 +83,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/_2sdp"
                 android:layout_marginRight="@dimen/_2sdp"
                 android:layout_weight="1"
                 android:background="@drawable/custom_green_bg"
@@ -113,6 +114,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/_2sdp"
+                android:layout_marginStart="@dimen/_2sdp"
                 android:layout_weight="1"
                 android:background="@drawable/custom_grey_bg"
                 android:gravity="center"
@@ -132,12 +134,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
                 android:orientation="horizontal"
-                android:visibility="visible">
+                android:visibility="visible"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginRight="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_2sdp"
                     android:layout_weight="1"
                     android:background="@drawable/custom_green_bg"
                     android:gravity="center"
@@ -166,6 +170,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="@dimen/_2sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:layout_weight="1"
                     android:background="@drawable/custom_green_bg"
                     android:gravity="center"
@@ -192,10 +197,10 @@
             </LinearLayout>
 
             <com.uber.sdk.android.rides.RideRequestButton
-                android:id="@+id/ride_request_buton"
+                android:id="@+id/ride_request_button"
                 uber:ub__style="black"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:visibility="visible"
                 android:layout_marginTop="@dimen/_5sdp"/>

@@ -26,4 +26,7 @@
     <string name="current_location">Current Location</string>
     <string name="Error_occurred_during_authentication">Error occurred during authentication</string>
     <string name="Error_occurred_in_the_Ride_Request_Widget">Error occurred in the Ride Request Widget</string>
+    <string name="background_image">Background Image for the Splash Activity</string>
+    <string name="logo_of_the_app">Logo of the App</string>
+    <string name="minutes">Minutes</string>
 </resources>
