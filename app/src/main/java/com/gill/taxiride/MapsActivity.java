@@ -58,15 +58,17 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,AdapterView.OnItemClickListener {
 
+    private static final String LOG_TAG = MapsActivity.class.getSimpleName();
+
     private GoogleMap mMap;
-    Context mContext;
-    TinyDB tinyDB;
-    AutoCompleteTextView pickUpLocationView, destinationView;
-    TextView pickUpTimeTextView, setPickUpTextView, fareEstimateTextView, timeEstimateTextView;
-    LinearLayout pickUpLayout, requestUberLayout;
+    private Context mContext;
+    private TinyDB tinyDB;
+    private AutoCompleteTextView pickUpLocationView, destinationView;
+    private TextView pickUpTimeTextView, setPickUpTextView, fareEstimateTextView, timeEstimateTextView;
+    private LinearLayout pickUpLayout, requestUberLayout;
     private RideRequestButton uberButton;
-    Dialog dialog;
-    double pickUpLatitude = 0, pickUpLongitude = 0, destinationLatitude = 0, destinationLongitude = 0;
+    private Dialog dialog;
+    private double pickUpLatitude = 0, pickUpLongitude = 0, destinationLatitude = 0, destinationLongitude = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,10 +80,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mContext=MapsActivity.this;
         tinyDB=new TinyDB(mContext);
-        dialog=Utils.get_progressDialog(mContext);
+        dialog=Utils.getProgressDialog(mContext);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         pickUpLocationView =(AutoCompleteTextView)findViewById(R.id.pickup_location);
@@ -92,7 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         requestUberLayout =(LinearLayout)findViewById(R.id.rideRequest_vertical_layout);
         fareEstimateTextView =(TextView)findViewById(R.id.fare_estimate);
         timeEstimateTextView =(TextView)findViewById(R.id.trip_duration);
-        uberButton = (RideRequestButton) findViewById(R.id.ride_request_buton);
+        uberButton = (RideRequestButton) findViewById(R.id.ride_request_button);
 
         SessionConfiguration config = new SessionConfiguration.Builder()
                 .setClientId(GeneralValues.UBER_CLIENT_ID) //This is necessary
@@ -203,7 +206,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Utils.show_log(""+adapterView.getItemAtPosition(position)+" id = "+view.getId());
+        Log.d(LOG_TAG, adapterView.getItemAtPosition(position)+ " id = " + view.getId());
     }
 
     public static ArrayList<String> autocomplete(String input) {
@@ -217,8 +220,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             sb.append("&input=" + URLEncoder.encode(input, "utf8"));
 
             URL url = new URL(sb.toString());
-
-            System.out.println("URL: " + url);
             conn = (HttpURLConnection) url.openConnection();
             InputStreamReader in = new InputStreamReader(conn.getInputStream());
 
@@ -229,10 +230,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 jsonResults.append(buff, 0, read);
             }
         } catch (MalformedURLException e) {
-            Log.e("Error", "Error processing Places API URL", e);
+            Log.e(LOG_TAG, "Error processing Places API URL", e);
             return resultList;
         } catch (IOException e) {
-            Log.e("IO Exp", "Error connecting to Places API", e);
+            Log.e(LOG_TAG, "Error connecting to Places API", e);
             return resultList;
         } finally {
             if (conn != null) {
@@ -250,7 +251,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
             }
         } catch (JSONException e) {
-            Log.e("JSON EXP", "Cannot process JSON results", e);
+            Log.e(LOG_TAG, "Cannot process JSON results", e);
         }
         return resultList;
     }
@@ -342,9 +343,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 super.onPostExecute(s);
                 if(check.equals("pick")){
                     if(pickUpLatitude == 0|| pickUpLongitude == 0){
-                        Utils.showToast(mContext,getString(R.string.can_not_find_coordinates));
+                        dialog.dismiss();
+                        Utils.showToast(mContext,getString(R.string.cannot_find_coordinates));
                     }else{
-                        Utils.show_log("Location : "+ pickUpLatitude +","+ pickUpLongitude);
+                        Log.d (LOG_TAG, pickUpLatitude +","+ pickUpLongitude);
                         mMap.clear();
                         LatLng pick_loc = new LatLng(pickUpLatitude, pickUpLongitude);
                         mMap.addMarker(new MarkerOptions().position(pick_loc).title(place).
@@ -354,11 +356,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         getPickUpTime("selected");
                     }
-                }else{
+                } else {
                     if(destinationLatitude ==0|| destinationLongitude ==0){
-                        Utils.showToast(mContext,getString(R.string.can_not_find_coordinates));
+                        dialog.dismiss();
+                        Utils.showToast(mContext,getString(R.string.cannot_find_coordinates));
                     }else{
-                        Utils.show_log("Location : "+ destinationLatitude +","+ destinationLongitude);
+                        Log.d(LOG_TAG, destinationLatitude +","+ destinationLongitude);
                         getPriceEstimate();
                     }
                 }
@@ -375,39 +378,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destinationLatitude = 0;
         destinationLongitude = 0;
 
-        String complete_url="";
+        String completeUrl;
         if(check.equals("current")){
             dialog.show();
-            complete_url="&start_latitude="+tinyDB.getDouble(GeneralValues.CURRENT_LATITUDE,0)+
-                    "&start_longitude="+tinyDB.getDouble(GeneralValues.CURRENT_LONGITUDE,0);
+            completeUrl = "&start_latitude=" + tinyDB.getDouble(GeneralValues.CURRENT_LATITUDE,0)+
+                    "&start_longitude=" + tinyDB.getDouble(GeneralValues.CURRENT_LONGITUDE,0);
         }else{
-            complete_url="&start_latitude="+ pickUpLatitude +"&start_longitude="+ pickUpLongitude;
+            completeUrl = "&start_latitude=" + pickUpLatitude + "&start_longitude=" + pickUpLongitude;
         }
-        Call<ResponseBody> call = Utils.requestApi_Default().requestJson_simple(GeneralValues.UBER_TIME_URL+complete_url);
-        Utils.show_log("url = "+call.request().url());
+
+        Call<ResponseBody> call = Utils.requestApi_Default().requestJson_simple(GeneralValues.UBER_TIME_URL + completeUrl);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
                     String jsonResponse = response.body().string();
-                    Log.e("res = ",jsonResponse);
+                    Log.e(LOG_TAG,jsonResponse);
 
                     JSONObject result = new JSONObject(jsonResponse);
-                    JSONArray list_arr=new JSONArray(result.getString("times"));
+                    JSONArray list_arr = new JSONArray(result.getString("times"));
+
                     String time="";
-                    if(list_arr!=null&&list_arr.length()>0){
-                        for(int i=0;i<list_arr.length();i++){
+                    if(list_arr != null && list_arr.length() > 0){
+                        for(int i=0; i < list_arr.length(); i++){
                             JSONObject full_data = list_arr.getJSONObject(i);
                             if(full_data.getString("display_name").equals("uberX")){
-                                time=full_data.getString("estimate");
+                                time = full_data.getString("estimate");
                             }
                         }
                         if(time.equals("")){
-                            Utils.showToast(mContext,getString(R.string.not_found_time));
+                            Utils.showToast(mContext,getString(R.string.time_not_found));
                         }else{
                             if(check.equals("current")){
-                                pickUpTimeTextView.setText(Integer.parseInt(time)/60+" Minutes");
+                                pickUpTimeTextView.setText(Integer.parseInt(time)/60 + R.string.minutes);
                             }else{
                                 requestUberLayout.setVisibility(View.GONE);
                                 pickUpLayout.setVisibility(View.VISIBLE);
@@ -416,7 +420,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 destinationLatitude = 0;
                                 destinationLongitude = 0;
                                 setPickUpTextView.setBackgroundResource(R.drawable.custom_green_selector);
-                                pickUpTimeTextView.setText(Integer.parseInt(time)/60+" Minutes");
+                                pickUpTimeTextView.setText(Integer.parseInt(time)/60 + R.string.minutes);
                             }
                         }
                         try{
@@ -425,7 +429,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         }
                     }else{
-                        Utils.showToast(mContext,getString(R.string.not_found_time));
+                        Utils.showToast(mContext,getString(R.string.time_not_found));
                         try{
                             dialog.dismiss();
                         }catch (Exception e){
@@ -434,7 +438,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 } catch (Exception e) {
                     Utils.showToast(mContext,getString(R.string.server_error));
-                    Log.e("exception", "" + e.getMessage());
+                    Log.e(LOG_TAG, "" + e.getMessage());
                 }
             }
 
@@ -465,14 +469,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void getPriceEstimate(){
+
         fareEstimateTextView.setText("");
         timeEstimateTextView.setText("");
-        Call<ResponseBody> call = Utils.requestApi_Default().requestJson_simple(
-                GeneralValues.UBER_PRICE_URL+"&start_latitude="
-                        + pickUpLatitude +"&start_longitude="+ pickUpLongitude +
-                        "&end_latitude="+ destinationLatitude +
-                        "&end_longitude="+ destinationLongitude);
-        Utils.show_log("url = "+call.request().url());
+
+        String url = GeneralValues.UBER_PRICE_URL + "&start_latitude="
+                + pickUpLatitude + "&start_longitude=" + pickUpLongitude +
+                "&end_latitude=" + destinationLatitude +
+                "&end_longitude=" + destinationLongitude;
+
+        Call<ResponseBody> call = Utils.requestApi_Default().requestJson_simple(url);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -484,25 +490,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     }
                     String jsonResponse = response.body().string();
-                    Log.e("res = ",jsonResponse);
+                    Log.e(LOG_TAG,jsonResponse);
 
                     JSONObject result = new JSONObject(jsonResponse);
-                    JSONArray list_arr=new JSONArray(result.getString("prices"));
-                    String time="",price="";
-                    if(list_arr!=null&&list_arr.length()>0){
-                        for(int i=0;i<list_arr.length();i++){
+                    JSONArray list_arr = new JSONArray(result.getString("prices"));
+
+                    String time="", price="";
+                    if(list_arr!=null && list_arr.length()>0){
+                        for(int i=0; i < list_arr.length(); i++){
                             JSONObject full_data = list_arr.getJSONObject(i);
                             if(full_data.getString("display_name").equals("uberX")){
-                                time=full_data.getString("duration");
-                                price=full_data.getString("estimate");
+                                time = full_data.getString("duration");
+                                price = full_data.getString("estimate");
                             }
                         }
-                        if(time.equals("")&&price.equals("")){
-                            Utils.showToast(mContext,getString(R.string.not_found_fare));
+                        if(time.equals("") && price.equals("")){
+                            Utils.showToast(mContext,getString(R.string.fare_not_found));
                         }else{
                             requestUberLayout.setVisibility(View.VISIBLE);
                             fareEstimateTextView.setText(price);
-                            timeEstimateTextView.setText(Integer.parseInt(time)/60+" Minutes");
+                            timeEstimateTextView.setText(Integer.parseInt(time)/60 + R.string.minutes);
                         }
                         try{
                             dialog.dismiss();
@@ -510,7 +517,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         }
                     }else{
-                        Utils.showToast(mContext,getString(R.string.not_found_fare));
+                        Utils.showToast(mContext,getString(R.string.fare_not_found));
                         try{
                             dialog.dismiss();
                         }catch (Exception e){

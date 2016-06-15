@@ -8,7 +8,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -66,7 +65,7 @@ public class Utils {
     }
 
 
-    public static Dialog get_progressDialog(Context mContext) {
+    public static Dialog getProgressDialog(Context mContext) {
         Dialog dialog = new Dialog(mContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_progress);
@@ -94,14 +93,6 @@ public class Utils {
         return ((LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE)).isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
-    /**
-     * Show Log
-     *
-     * @param message Message that want to show into Log
-     */
-    public static void show_log(String message) {
-        Log.e("Log Message", "" + message);
-    }
 
     public static void hideKeyboard(Context mContext, View view) {
         if (view != null) {

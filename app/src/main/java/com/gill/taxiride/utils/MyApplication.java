@@ -9,7 +9,7 @@ import com.gill.taxiride.R;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 
-public class MyAppliction extends Application{
+public class MyApplication extends Application{
 
     @Override
     public void onCreate() {

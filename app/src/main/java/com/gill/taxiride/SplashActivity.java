@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -29,21 +30,19 @@ import com.gill.taxiride.utils.Utils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SplashActivity extends AppCompatActivity {
-
-    ImageView logo;
-    TextView title;
-    TinyDB tinyDB;
-    Context mContext;
+    private static final String LOG_TAG = SplashActivity.class.getSimpleName();
+    private ImageView logo;
+    private TextView title;
+    private TinyDB tinyDB;
+    private Context mContext;
     private LocationListener locationListener;
     private LocationManager locationManager;
-    final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 45;
+    private static final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 45;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);*/
 
         WindowManager.LayoutParams params = getWindow().getAttributes();
         params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
@@ -85,13 +84,12 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Utils.show_log("in resume");
-        if(check_GPS()){
+        if(checkGPS()){
             if(Utils.isNetworkConnected(getApplicationContext())){
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     askPermissions();
                 } else {
-                    fetch_location();
+                    fetchLocation();
                 }
             }else{
                 Utils.showToast(getApplicationContext(),getString(R.string.no_internet_connection));
@@ -102,7 +100,7 @@ public class SplashActivity extends AppCompatActivity {
 
 
     //stay 1500 milliseconds here before goto next screen
-    public void start_timer(){
+    public void startTimer(){
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -130,7 +128,7 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
-    public boolean check_GPS(){
+    public boolean checkGPS(){
         if (Utils.isGpsEnabled(mContext)) {
             return true;
         } else {
@@ -152,7 +150,7 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    private void fetch_location() {
+    private void fetchLocation() {
         locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
 
         locationListener = new LocationListener() {
@@ -161,13 +159,13 @@ public class SplashActivity extends AppCompatActivity {
                 String latitude=String.valueOf(location.getLatitude());
                 String longitude=String.valueOf(location.getLongitude());
                 if(latitude.equalsIgnoreCase("")||longitude.equalsIgnoreCase("")){
-                    Utils.showToast(mContext, getString(R.string.can_not_able_find_location));
+                    Utils.showToast(mContext, getString(R.string.cannot_find_location));
                 }else{
                     tinyDB.putDouble(GeneralValues.CURRENT_LATITUDE,location.getLatitude());
                     tinyDB.putDouble(GeneralValues.CURRENT_LONGITUDE,location.getLongitude());
-                    Utils.show_log("Location : Latitude = "+tinyDB.getDouble(GeneralValues.CURRENT_LATITUDE,0)+
-                            " Longitude = "+tinyDB.getDouble(GeneralValues.CURRENT_LONGITUDE,0));
-                    start_timer();
+                    Log.d(LOG_TAG, "Latitude = " + tinyDB.getDouble(GeneralValues.CURRENT_LATITUDE,0)+
+                            " Longitude = " + tinyDB.getDouble(GeneralValues.CURRENT_LONGITUDE,0));
+                    startTimer();
                 }
             }
 
@@ -200,7 +198,7 @@ public class SplashActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(SplashActivity.this, new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
         } else {
-            fetch_location();
+            fetchLocation();
         }
     }
 
@@ -209,7 +207,7 @@ public class SplashActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    fetch_location();
+                    fetchLocation();
                 }else{
                     Utils.showToast(mContext,getString(R.string.permission_required));
                 }
