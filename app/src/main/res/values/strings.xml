@@ -7,7 +7,7 @@
     <string name="check_location_services">Location Services Disabled</string>
     <string name="settings">Settings</string>
     <string name="back">Back</string>
-    <string name="can_not_able_find_location">Cannot find your location!</string>
+    <string name="cannot_find_location">Cannot find your location!</string>
     <string name="permission_required">Permission required to access your location.</string>
     <string name="gps_required">Enable GPS(Required)</string>
     <string name="your_current_location">Your current location</string>
@@ -18,11 +18,11 @@
     <string name="estimate_fare">Fare Estimate</string>
     <string name="book_uber">Book Uber</string>
     <string name="estimate_time">Trip Duration</string>
-    <string name="can_not_find_coordinates">Cannot find the Location entered</string>
+    <string name="cannot_find_coordinates">Cannot find the Location entered</string>
     <string name="server_error">Cannot find estimate price.</string>
     <string name="server_not_responding">Server Not Responding</string>
-    <string name="not_found_time">Cannot find the estimated time</string>
-    <string name="not_found_fare">Cannot find the estimated fare</string>
+    <string name="time_not_found">Cannot find the estimated time</string>
+    <string name="fare_not_found">Cannot find the estimated fare</string>
     <string name="current_location">Current Location</string>
     <string name="Error_occurred_during_authentication">Error occurred during authentication</string>
     <string name="Error_occurred_in_the_Ride_Request_Widget">Error occurred in the Ride Request Widget</string>
